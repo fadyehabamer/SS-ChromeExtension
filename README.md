@@ -89,3 +89,7 @@ Let's now add some features to our extension. We'll begin by placing a `backgrou
 - `Persistent` will be set to false. The only time a background script should be kept active indefinitely is if the extension utilises Chrome. To prevent or alter network requests, use the webRequest API. Non-persistent background pages are incompatible with the webRequest API.
 
 - `browser_actions` are used to add icons to the main Google Chrome toolbar, which is located to the right of the address bar. A browser action can contain a tooltip, a badge, and a popup in addition to its symbol. The HTML pages are contained in the popup. For the time being, we'll stick with symbol and title.
+
+- `icons`: It defines the size of our extension's icons.
+
+- `permissions`: If an API needs you to declare permission in the manifest, it will explain you how to do so in its documentation. Each permission can be one of a list of known strings (for example, "geolocation") or a match pattern that grants access to one or more hosts. `The activeTab` permission grants an extension temporary access to the currently active tab when the user engages the extension - for example, by clicking its browser action," according to the activeTab description. The user's access to the tab is granted only while they are on that page, and it is removed when they browse away or shut the tab.
