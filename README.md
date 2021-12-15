@@ -93,3 +93,8 @@ Let's now add some features to our extension. We'll begin by placing a `backgrou
 - `icons`: It defines the size of our extension's icons.
 
 - `permissions`: If an API needs you to declare permission in the manifest, it will explain you how to do so in its documentation. Each permission can be one of a list of known strings (for example, "geolocation") or a match pattern that grants access to one or more hosts. `The activeTab` permission grants an extension temporary access to the currently active tab when the user engages the extension - for example, by clicking its browser action," according to the activeTab description. The user's access to the tab is granted only while they are on that page, and it is removed when they browse away or shut the tab.
+
+
+<hr>
+
+### 4.background.js
