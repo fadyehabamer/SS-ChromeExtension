@@ -84,3 +84,8 @@ Let's now add some features to our extension. We'll begin by placing a `backgrou
     "manifest_version": 2,
 }
 ```
+- `background`: Adding a background script to the manifest instructs the extension which file to refer to and how to act with that file. The extension is now aware that it contains a non-persistent background script, and it will search the registered file for relevant events to listen for.
+
+- `Persistent` will be set to false. The only time a background script should be kept active indefinitely is if the extension utilises Chrome. To prevent or alter network requests, use the webRequest API. Non-persistent background pages are incompatible with the webRequest API.
+
+- `browser_actions` are used to add icons to the main Google Chrome toolbar, which is located to the right of the address bar. A browser action can contain a tooltip, a badge, and a popup in addition to its symbol. The HTML pages are contained in the popup. For the time being, we'll stick with symbol and title.
