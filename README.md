@@ -98,3 +98,4 @@ Let's now add some features to our extension. We'll begin by placing a `backgrou
 <hr>
 
 ### 4.background.js
+**Our manifest file is now complete. Let's look at the background.js file now.**
