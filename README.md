@@ -6,3 +6,9 @@
   SS Chrome Extension
 </h1>
 <h3  align='center'> Developed by world's [0] FrontEnd Developer : ME 😝 </h3>
+
+<br/>
+
+<h2>
+  Introduction
+</h2>
