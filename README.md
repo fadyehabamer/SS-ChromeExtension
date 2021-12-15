@@ -82,4 +82,5 @@ Let's now add some features to our extension. We'll begin by placing a `backgrou
         "activeTab"
     ],
     "manifest_version": 2,
-}```
+}
+```
