@@ -49,3 +49,37 @@
 By pressing the toggle switch adjacent to **Developer mode**
 
 - Select the extension directory by clicking the **LOAD UNPACKED** button.
+
+<img src='Repo Assets/ssChrome.png'>
+
+**Boom! The extension has been deployed successfully. Because no icons were specified in the manifest, the extension will be given a generic toolbar icon.**
+
+<hr>
+
+### 3.Adding more features in manifest.json
+Let's now add some features to our extension. We'll begin by placing a `background script` in our folder and adding some other necessary elements to our manifest file, such as icons and permissions.
+
+```js
+{
+    "name": "Screenshot extension",
+    "version": "1.0",
+    "description": "Building a screenshot taking extension",
+    "background": {
+        "scripts": ["background.js"],
+        "persistent": false
+    },
+    "browser_action": {
+        "default_icon": "yourImgSrcHere",
+        "default_title": "Take a screen shot!" 
+    },
+    "icons": {
+        "16": "images/yourImgSrcHere",
+        "32": "images/yourImgSrcHere",
+        "64": "images/yourImgSrcHere",
+        "128": "images/yourImgSrcHere"
+    },
+    "permissions": [
+        "activeTab"
+    ],
+    "manifest_version": 2,
+}```
