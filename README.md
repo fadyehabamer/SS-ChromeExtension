@@ -25,7 +25,7 @@
 
 ### 1.Create the Manifest
 **The manifest file is the heart of a chrome extension. In our folder, we'll need to create a manifest.json file. Include this in your manifest file.**
-```js
+```json
 {
     "name": "Screenshot extension",
     "version": "1.0",
@@ -59,7 +59,7 @@ By pressing the toggle switch adjacent to **Developer mode**
 ### 3.Adding more features in manifest.json
 Let's now add some features to our extension. We'll begin by placing a `background script` in our folder and adding some other necessary elements to our manifest file, such as icons and permissions.
 
-```js
+```json
 {
     "name": "Screenshot extension",
     "version": "1.0",
