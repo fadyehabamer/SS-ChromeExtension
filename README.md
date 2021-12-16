@@ -154,3 +154,10 @@ chrome.tabs.create({url: viewTabUrl}, (tab) => {
 - We just add an image tag that will be used to show the image url supplied by our extension; for now, we're using a white background placeholder until we can update it.
 
 <hr>
+
+### 6.screenshot.js
+```javascript
+function setScreenshotUrl(url) {
+  document.getElementById('target').src = url;
+}
+```
