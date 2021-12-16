@@ -136,3 +136,9 @@ chrome.tabs.create({url: viewTabUrl}, (tab) => {
 - We'll `delete` the `listener` as soon as the tests pass because we don't need it right now, therefore we'll use removeEventListener to do so.
 
 - The `getViews` function is used to retrieve all of the views opened by our extension, and it returns an array of JavaScript `window` objects for each of the sites running within the current extension. We check each entry's URL to the unique URL we set at the start of the loop, and if we find a `match`, we call a function on that view that will be executed on the page that our extension has opened, and we send our image URL to the page so it can `show` it to the user.
+
+- Let's look at what we'll put in our `screenshot.html` file, which we just opened.
+
+<hr>
+
+### 5.screenshot.html File
