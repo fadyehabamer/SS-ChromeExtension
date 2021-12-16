@@ -171,3 +171,6 @@ function setScreenshotUrl(url) {
 <img src='Repo Assets/screenshot-test.jpg'>
 
 - we took a snapshot of the website, and if you look at the URL, you'll notice that the number 100 has been tacked to the end; this is the same random variable we used, and it continues to increase as we click on it.
+
+
+### Liked this repo .. Support by star 🤩
