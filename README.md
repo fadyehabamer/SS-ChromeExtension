@@ -125,3 +125,7 @@ chrome.tabs.create({url: viewTabUrl}, (tab) => {
   });
 });
 ```
+- Let's have a look at this file one by one. First, we add a listener to our icon on the right of the address bar, then use the `chrome tabs API` to capture the `visible tab` and use the `captureVisibleTab` function. We'll utilise the data URL returned by this function to display the picture in the next tab.
+
+- Then we'll make a tab URL to open the URL in the next tab, and we'll attach an id to the end of it so that each screenshot has its own page and doesn't clash with the others. We did this by setting an id variable to 100, which would keep `increasing` with each click.
+
