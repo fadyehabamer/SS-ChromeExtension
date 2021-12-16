@@ -130,3 +130,5 @@ chrome.tabs.create({url: viewTabUrl}, (tab) => {
 - Then we'll make a tab URL to open the URL in the next tab, and we'll attach an id to the end of it so that each screenshot has its own page and doesn't clash with the others. We did this by setting an id variable to 100, which would keep `increasing` with each click.
 
 - We open the tab URL by sending the URL that we just constructed to the `chrome tabs create` function, and we save the `tab id` that we obtain from this method in the `targetId` variable when the tab is opened.
+
+- On the newly formed tab, we also add a listener that is activated when it is loaded. As a result, we add a listener to the tabs API's `onUpdated` event. Because the tab's URL may not be set at the time this event is triggered, we did not connect a listener to the `onCreated` event. However, you may listen to `onUpdated` events to be alerted when a URL is set. We verify if the opened tab's id is the same as the `target id` that we just saved and that the page loading status is complete inside the listener. Either loaded or complete will be returned by the `changedProps` object.
