@@ -161,3 +161,4 @@ function setScreenshotUrl(url) {
   document.getElementById('target').src = url;
 }
 ```
+- This is the same `setScreenshotUrl` that we called in background.js file inside the loop on our view and it takes a URL as its parameter and sets that URL as image source URL and it displays our image.
