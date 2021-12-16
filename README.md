@@ -129,3 +129,4 @@ chrome.tabs.create({url: viewTabUrl}, (tab) => {
 
 - Then we'll make a tab URL to open the URL in the next tab, and we'll attach an id to the end of it so that each screenshot has its own page and doesn't clash with the others. We did this by setting an id variable to 100, which would keep `increasing` with each click.
 
+- We open the tab URL by sending the URL that we just constructed to the `chrome tabs create` function, and we save the `tab id` that we obtain from this method in the `targetId` variable when the tab is opened.
