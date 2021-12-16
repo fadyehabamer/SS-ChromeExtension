@@ -162,3 +162,8 @@ function setScreenshotUrl(url) {
 }
 ```
 - This is the same `setScreenshotUrl` that we called in background.js file inside the loop on our view and it takes a URL as its parameter and sets that URL as image source URL and it displays our image.
+
+<hr>
+
+### 7.Usage of extension
+- Let's have a look at our extension in action right now. To begin, open your browser and load the unpacked extension. It will appear to the right of the address bar. Let's have a look at the preview by clicking on it.
