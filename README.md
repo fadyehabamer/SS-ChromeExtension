@@ -167,3 +167,7 @@ function setScreenshotUrl(url) {
 
 ### 7.Usage of extension
 - Let's have a look at our extension in action right now. To begin, open your browser and load the unpacked extension. It will appear to the right of the address bar. Let's have a look at the preview by clicking on it.
+
+<img src='Repo Assets/screenshot-test.jpg'>
+
+- we took a snapshot of the website, and if you look at the URL, you'll notice that the number 100 has been tacked to the end; this is the same random variable we used, and it continues to increase as we click on it.
