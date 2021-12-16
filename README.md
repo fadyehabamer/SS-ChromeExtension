@@ -142,3 +142,11 @@ chrome.tabs.create({url: viewTabUrl}, (tab) => {
 <hr>
 
 ### 5.screenshot.html File
+```Html
+<html>
+  <script src="screenshot.js"></script>
+  <body>
+    <img id="target" src="white.png" height="480">
+  </body>
+</html>
+```
