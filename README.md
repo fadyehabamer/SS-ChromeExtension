@@ -132,3 +132,7 @@ chrome.tabs.create({url: viewTabUrl}, (tab) => {
 - We open the tab URL by sending the URL that we just constructed to the `chrome tabs create` function, and we save the `tab id` that we obtain from this method in the `targetId` variable when the tab is opened.
 
 - On the newly formed tab, we also add a listener that is activated when it is loaded. As a result, we add a listener to the tabs API's `onUpdated` event. Because the tab's URL may not be set at the time this event is triggered, we did not connect a listener to the `onCreated` event. However, you may listen to `onUpdated` events to be alerted when a URL is set. We verify if the opened tab's id is the same as the `target id` that we just saved and that the page loading status is complete inside the listener. Either loaded or complete will be returned by the `changedProps` object.
+
+- We'll `delete` the `listener` as soon as the tests pass because we don't need it right now, therefore we'll use removeEventListener to do so.
+
+- The `getViews` function is used to retrieve all of the views opened by our extension, and it returns an array of JavaScript `window` objects for each of the sites running within the current extension. We check each entry's URL to the unique URL we set at the start of the loop, and if we find a `match`, we call a function on that view that will be executed on the page that our extension has opened, and we send our image URL to the page so it can `show` it to the user.
