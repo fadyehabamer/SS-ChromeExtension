@@ -110,6 +110,8 @@ body {
 
 /* The Close Button */
 .close {
+    background: none;
+    border: 0;
     color: white;
     float: right;
     font-size: 1rem;
