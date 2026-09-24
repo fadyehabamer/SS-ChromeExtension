@@ -8,6 +8,24 @@
 
 <br/>
 
+### Install (load unpacked)
+The extension uses **Manifest V3** and works in current versions of Chrome (and other Chromium browsers such as Edge and Brave).
+
+1. Clone or download this repository:
+   ```sh
+   git clone https://github.com/fadyehabamer/SS-ChromeExtension.git
+   ```
+2. Open `chrome://extensions` in Chrome.
+3. Turn on **Developer mode** (toggle in the top-right corner).
+4. Click **Load unpacked** and select the `SS Chrome Extension` folder (the one that contains `manifest.json`, not the repository root).
+5. Pin the extension from the puzzle-piece menu, open any web page and click the extension icon. A new tab opens with a screenshot of the visible part of the page; right-click the image and choose **Save image as...** to keep it.
+
+Pages that Chrome does not allow extensions to capture (such as `chrome://` pages and the Chrome Web Store) are skipped.
+
+The only permission requested is `activeTab`, which grants temporary access to the current tab only when you click the extension icon.
+
+<br/>
+
 ###  Introduction
 **Making a chrome extension was one of the most ambigous things for me and really want to develop one, but now it is easier than adding a click event in Javascript 😂**
 <br>
@@ -30,14 +48,14 @@
     "name": "Screenshot extension",
     "version": "1.0",
     "description": "Building a screenshot taking extension",
-    "manifest_version": 2
+    "manifest_version": 3
 }
 ```
 #### We can now add the extension to our Chrome extensions tab after entering these keys. But first, let's figure out what each line means.
 
 `name`: The name of our extension that is visible to users, such as Grammarly, honey, and so on. <br>
 `version`: Version denotes the extension's version number; we'll start with 1.0. description: Your extension's description is what it says on the tin.<br>
-`version manifest`: Developers should use the manifest version key in their manifests to declare which version of the manifest specification their package targets. In Chrome 18, the Manifest version 1 was deprecated. As a result, we'll be utilising version 2 of the manifest.
+`version manifest`: Developers should use the manifest version key in their manifests to declare which version of the manifest specification their package targets. Chrome no longer runs Manifest V2 extensions, so we'll be using version 3 of the manifest.
 
 <hr>
 
@@ -65,12 +83,14 @@ Let's now add some features to our extension. We'll begin by placing a `backgrou
     "version": "1.0",
     "description": "Building a screenshot taking extension",
     "background": {
-        "scripts": ["background.js"],
-        "persistent": false
+        "service_worker": "background.js"
     },
-    "browser_action": {
-        "default_icon": "yourImgSrcHere",
-        "default_title": "Take a screen shot!" 
+    "action": {
+        "default_icon": {
+            "16": "images/yourImgSrcHere",
+            "32": "images/yourImgSrcHere"
+        },
+        "default_title": "Take a screen shot!"
     },
     "icons": {
         "16": "images/yourImgSrcHere",
@@ -81,14 +101,12 @@ Let's now add some features to our extension. We'll begin by placing a `backgrou
     "permissions": [
         "activeTab"
     ],
-    "manifest_version": 2,
+    "manifest_version": 3
 }
 ```
-- `background`: Adding a background script to the manifest instructs the extension which file to refer to and how to act with that file. The extension is now aware that it contains a non-persistent background script, and it will search the registered file for relevant events to listen for.
+- `background`: In Manifest V3 the background script runs as a **service worker**. Chrome starts it when one of the events it listens for fires (such as a click on our toolbar icon) and stops it again when it is idle, so it must not rely on keeping state around for long.
 
-- `Persistent` will be set to false. The only time a background script should be kept active indefinitely is if the extension utilises Chrome. To prevent or alter network requests, use the webRequest API. Non-persistent background pages are incompatible with the webRequest API.
-
-- `browser_actions` are used to add icons to the main Google Chrome toolbar, which is located to the right of the address bar. A browser action can contain a tooltip, a badge, and a popup in addition to its symbol. The HTML pages are contained in the popup. For the time being, we'll stick with symbol and title.
+- `action` (called `browser_action` in Manifest V2) is used to add icons to the main Google Chrome toolbar, which is located to the right of the address bar. A browser action can contain a tooltip, a badge, and a popup in addition to its symbol. The HTML pages are contained in the popup. For the time being, we'll stick with symbol and title.
 
 - `icons`: It defines the size of our extension's icons.
 
@@ -101,41 +119,44 @@ Let's now add some features to our extension. We'll begin by placing a `backgrou
 **Our manifest file is now complete. Let's look at the background.js file now.**
 
 ```javascript
+// Screenshots waiting to be picked up by the viewer tab, keyed by id.
+// A Manifest V3 service worker cannot reach into extension pages the way
+// chrome.extension.getViews() did in MV2, so the viewer page asks for its
+// image with chrome.runtime.sendMessage() once it has loaded.
+const pendingScreenshots = new Map();
 let id = 100;
-chrome.browserAction.onClicked.addListener(() => {
-chrome.tabs.captureVisibleTab((screenshotUrl) => {
-    const viewTabUrl = chrome.extension.getURL('screenshot.html?id=' + id++)
-    let targetId = null;
-chrome.tabs.onUpdated.addListener(function listener(tabId,     changedProps) {
-if (tabId != targetId || changedProps.status != "complete")
+
+chrome.action.onClicked.addListener(async (tab) => {
+    let screenshotUrl;
+    try {
+        // The activeTab permission granted by clicking the action allows this capture.
+        screenshotUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: "png" });
+    } catch (error) {
+        // e.g. chrome:// pages and the Chrome Web Store cannot be captured.
+        console.error("Could not capture the visible tab:", error);
         return;
-chrome.tabs.onUpdated.removeListener(listener);
-const views = chrome.extension.getViews();
-      for (let i = 0; i < views.length; i++) {
-        let view = views[i];
-        if (view.location.href == viewTabUrl) {
-          view.setScreenshotUrl(screenshotUrl);
-          break;
-        }
-      }
-    });
-chrome.tabs.create({url: viewTabUrl}, (tab) => {
-      targetId = tab.id;
-    });
-  });
+    }
+    const screenshotId = String(id++);
+    pendingScreenshots.set(screenshotId, screenshotUrl);
+    await chrome.tabs.create({ url: chrome.runtime.getURL("screenshot.html?id=" + screenshotId) });
+});
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (!message || message.type !== "getScreenshot") {
+        return;
+    }
+    const screenshotUrl = pendingScreenshots.get(message.id) || null;
+    pendingScreenshots.delete(message.id);
+    sendResponse({ screenshotUrl });
 });
 ```
-- Let's have a look at this file one by one. First, we add a listener to our icon on the right of the address bar, then use the `chrome tabs API` to capture the `visible tab` and use the `captureVisibleTab` function. We'll utilise the data URL returned by this function to display the picture in the next tab.
+- Let's have a look at this file one by one. First, we add a listener to our icon on the right of the address bar (`chrome.action.onClicked`), then use the `chrome tabs API` to capture the `visible tab` with the `captureVisibleTab` function. It returns a data URL of the picture that we'll display in a new tab. Some pages (such as `chrome://` pages) cannot be captured, so we catch that error and stop.
 
-- Then we'll make a tab URL to open the URL in the next tab, and we'll attach an id to the end of it so that each screenshot has its own page and doesn't clash with the others. We did this by setting an id variable to 100, which would keep `increasing` with each click.
+- We store the data URL in the `pendingScreenshots` map under an id. The id starts at 100 and keeps `increasing` with each click, so each screenshot has its own page and doesn't clash with the others.
 
-- We open the tab URL by sending the URL that we just constructed to the `chrome tabs create` function, and we save the `tab id` that we obtain from this method in the `targetId` variable when the tab is opened.
+- We open `screenshot.html?id=<id>` with the `chrome tabs create` function.
 
-- On the newly formed tab, we also add a listener that is activated when it is loaded. As a result, we add a listener to the tabs API's `onUpdated` event. Because the tab's URL may not be set at the time this event is triggered, we did not connect a listener to the `onCreated` event. However, you may listen to `onUpdated` events to be alerted when a URL is set. We verify if the opened tab's id is the same as the `target id` that we just saved and that the page loading status is complete inside the listener. Either loaded or complete will be returned by the `changedProps` object.
-
-- We'll `delete` the `listener` as soon as the tests pass because we don't need it right now, therefore we'll use removeEventListener to do so.
-
-- The `getViews` function is used to retrieve all of the views opened by our extension, and it returns an array of JavaScript `window` objects for each of the sites running within the current extension. We check each entry's URL to the unique URL we set at the start of the loop, and if we find a `match`, we call a function on that view that will be executed on the page that our extension has opened, and we send our image URL to the page so it can `show` it to the user.
+- In Manifest V2 the background page could reach into that tab with `chrome.extension.getViews()` and call a function on it directly. A Manifest V3 service worker has no access to other pages, so the page asks for its screenshot instead: it sends a `getScreenshot` message with its id, and the `chrome.runtime.onMessage` listener answers with the stored data URL and removes it from the map.
 
 - Let's look at what we'll put in our `screenshot.html` file, which we just opened.
 
@@ -143,15 +164,16 @@ chrome.tabs.create({url: viewTabUrl}, (tab) => {
 
 ### 5.screenshot.html File
 ```Html
-<html>
-  <script src="screenshot.js"></script>
+<!DOCTYPE html>
+<html lang="en">
   <body>
-    <img id="target" src="white.png" height="480">
+    <img id="target" alt="Screenshot of the captured page">
+    <script src="screenshot.js"></script>
   </body>
 </html>
 ```
 
-- We just add an image tag that will be used to show the image url supplied by our extension; for now, we're using a white background placeholder until we can update it.
+- We just add an image tag that will be used to show the image url supplied by our extension. Manifest V3 does not allow inline scripts in extension pages, so all the JavaScript lives in `screenshot.js`.
 
 <hr>
 
@@ -160,8 +182,15 @@ chrome.tabs.create({url: viewTabUrl}, (tab) => {
 function setScreenshotUrl(url) {
   document.getElementById('target').src = url;
 }
+
+const screenshotId = new URLSearchParams(location.search).get('id');
+chrome.runtime.sendMessage({ type: 'getScreenshot', id: screenshotId }, (response) => {
+  if (response && response.screenshotUrl) {
+    setScreenshotUrl(response.screenshotUrl);
+  }
+});
 ```
-- This is the same `setScreenshotUrl` that we called in background.js file inside the loop on our view and it takes a URL as its parameter and sets that URL as image source URL and it displays our image.
+- The page reads its id from the URL, asks the service worker for the matching screenshot, and `setScreenshotUrl` sets the returned data URL as the image source so it is displayed.
 
 <hr>
 
